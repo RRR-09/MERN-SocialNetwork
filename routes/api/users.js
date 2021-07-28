@@ -1,10 +1,14 @@
+require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator');
 
 const User = require('../../models/User');
+
+const jwtSecret = process.env.JWT_SECRET;
 
 //@route    POST api/users
 //@desc     Register user
@@ -58,7 +62,21 @@ router.post(
       await user.save();
 
       //Return JWT
-      res.send('User Registered');
+      const jwtPayload = {
+        user: {
+          id: user.id,
+        },
+      };
+
+      jwt.sign(
+        jwtPayload,
+        jwtSecret,
+        { expiresIn: 999999 }, //Should be 3600 in prod
+        (err, token) => {
+          if (err) throw err;
+          res.json({ token });
+        }
+      );
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server Error');
