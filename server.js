@@ -4,6 +4,8 @@ const connectDB = require('./config/db.js');
 const app = express();
 //Initialize DB Connection
 connectDB();
+//Initialize middleware
+app.use(express.json());
 
 app.get('/', (_req, res) => res.send('API Running'));
 
