@@ -95,4 +95,57 @@ router.delete('/:post_id', auth, async (req, res) => {
   }
 });
 
+//@todo Realistically liked posts should be attached to the individual, not the other way around.
+
+//@route    PUT api/posts/like/:post_id
+//@desc     Add like
+//@access   Private
+router.put('/like/:post_id', [auth], async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.post_id);
+    const hasUserLiked =
+      post.likes.filter((like) => like.user.toString() == req.user.id).length >
+      0;
+    if (hasUserLiked) {
+      return res.status(400).json({ msg: 'Post already liked' });
+    }
+    //Add to beginning instead of end
+    post.likes.unshift({ user: req.user.id });
+    await post.save();
+    res.json(post.likes);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
+//@route    PUT api/posts/unlike/:post_id
+//@desc     Remove like
+//@access   Private
+router.put('/unlike/:post_id', [auth], async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.post_id);
+    const hasUserLiked =
+      post.likes.filter((like) => like.user.toString() == req.user.id).length >
+      0;
+    if (!hasUserLiked) {
+      return res.status(400).json({ msg: 'Post has not been liked' });
+    }
+    //Get the index of our requested id (in an array of itemIDs)
+    const removeIndex = post.likes
+      .map((like) => like.user.toString())
+      .indexOf(req.user.id);
+    if (removeIndex == -1) {
+      return res.status(400).json({ msg: 'Post has not been liked' });
+    }
+    //Remove the experience at that index
+    post.likes.splice(removeIndex, 1);
+    await post.save();
+    res.json(post.likes);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+});
+
 module.exports = router;
