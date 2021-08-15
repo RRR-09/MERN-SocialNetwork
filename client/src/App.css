@@ -217,6 +217,10 @@ img {
 .round-img {
   border-radius: 50%;
 }
+.round-avatar {
+  border-radius: 50%;
+  background: rgb(52, 58, 64)
+}
 
 .line {
   height: 1px;
