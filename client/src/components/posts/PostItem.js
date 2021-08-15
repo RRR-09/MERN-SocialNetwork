@@ -11,6 +11,7 @@ const PostItem = ({
   deletePost,
   auth,
   post: { _id, text, name, avatar, user, likes, comments, date },
+  showActions,
 }) => {
   return (
     <Fragment>
@@ -26,20 +27,32 @@ const PostItem = ({
           <p className='post-date'>
             <Moment format='YYYY/MM/DD hh:mm:ss a'>{date}</Moment>
           </p>
-
-          {
-            // @todo: Fix this overcomplicated ternary; Patch because the system proposed uses "dislike" as unintuitive "un-like"
-            likes.length > 0 ? (
-              likes.map((like) =>
-                like.user === user ? (
-                  <button
-                    onClick={(e) => removeLike(_id)}
-                    type='button'
-                    className='btn btn-primary'
-                  >
-                    <i className='fas fa-thumbs-up'></i>{' '}
-                    {likes.length > 0 && <span>{likes.length}</span>}
-                  </button>
+          {showActions && (
+            <Fragment>
+              {
+                // @todo: Fix this overcomplicated ternary; Patch because the system proposed uses "dislike" as unintuitive "un-like"}
+                likes.length > 0 ? (
+                  likes.map((like) =>
+                    like.user === user ? (
+                      <button
+                        onClick={(e) => removeLike(_id)}
+                        type='button'
+                        className='btn btn-primary'
+                      >
+                        <i className='fas fa-thumbs-up'></i>{' '}
+                        {likes.length > 0 && <span>{likes.length}</span>}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={(e) => addLike(_id)}
+                        type='button'
+                        className='btn btn-light'
+                      >
+                        <i className='fas fa-thumbs-up'></i>{' '}
+                        {likes.length > 0 && <span>{likes.length}</span>}
+                      </button>
+                    )
+                  )
                 ) : (
                   <button
                     onClick={(e) => addLike(_id)}
@@ -50,37 +63,32 @@ const PostItem = ({
                     {likes.length > 0 && <span>{likes.length}</span>}
                   </button>
                 )
-              )
-            ) : (
-              <button
-                onClick={(e) => addLike(_id)}
-                type='button'
-                className='btn btn-light'
-              >
-                <i className='fas fa-thumbs-up'></i>{' '}
-                {likes.length > 0 && <span>{likes.length}</span>}
-              </button>
-            )
-          }
-          <Link to={`/post/${_id}`} className='btn btn-light'>
-            Comments{' '}
-            {comments.length > 0 && (
-              <span className='comment-count'>{comments.length}</span>
-            )}
-          </Link>
-          {!auth.loading && user === auth.user._id && (
-            <button
-              onClick={(e) => deletePost(_id)}
-              type='button'
-              className='btn btn-danger'
-            >
-              <i className='fas fa-times'></i>
-            </button>
+              }
+              <Link to={`/posts/${_id}`} className='btn btn-light'>
+                Comments{' '}
+                {comments.length > 0 && (
+                  <span className='comment-count'>{comments.length}</span>
+                )}
+              </Link>
+              {!auth.loading && user === auth.user._id && (
+                <button
+                  onClick={(e) => deletePost(_id)}
+                  type='button'
+                  className='btn btn-danger'
+                >
+                  <i className='fas fa-times'></i>
+                </button>
+              )}
+            </Fragment>
           )}
         </div>
       </div>
     </Fragment>
   );
+};
+
+PostItem.defaultProps = {
+  showActions: true,
 };
 
 PostItem.propTypes = {
