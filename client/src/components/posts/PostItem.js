@@ -31,28 +31,18 @@ const PostItem = ({
             <Fragment>
               {
                 // @todo: Fix this overcomplicated ternary; Patch because the system proposed uses "dislike" as unintuitive "un-like"}
-                likes.length > 0 ? (
-                  likes.map((like) =>
-                    like.user === user ? (
-                      <button
-                        onClick={(e) => removeLike(_id)}
-                        type='button'
-                        className='btn btn-primary'
-                      >
-                        <i className='fas fa-thumbs-up'></i>{' '}
-                        {likes.length > 0 && <span>{likes.length}</span>}
-                      </button>
-                    ) : (
-                      <button
-                        onClick={(e) => addLike(_id)}
-                        type='button'
-                        className='btn btn-light'
-                      >
-                        <i className='fas fa-thumbs-up'></i>{' '}
-                        {likes.length > 0 && <span>{likes.length}</span>}
-                      </button>
-                    )
-                  )
+                auth &&
+                auth.user &&
+                likes.filter((like) => like.user === auth.user._id).length >
+                  0 ? (
+                  <button
+                    onClick={(e) => removeLike(_id)}
+                    type='button'
+                    className='btn btn-primary'
+                  >
+                    <i className='fas fa-thumbs-up'></i>{' '}
+                    {likes.length > 0 && <span>{likes.length}</span>}
+                  </button>
                 ) : (
                   <button
                     onClick={(e) => addLike(_id)}
