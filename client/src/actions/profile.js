@@ -55,7 +55,9 @@ export const getProfileById = (userID) => async (dispatch) => {
   } catch (err) {
     dispatch({
       type: PROFILE_ERROR,
-      payload: { msg: err.response.statusText, status: err.response.status },
+      payload: err.response
+        ? { msg: err.response.statusText, status: err.response.status }
+        : { msg: 'Failed', status: 500 },
     });
   }
 };
